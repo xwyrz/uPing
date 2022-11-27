@@ -10,16 +10,16 @@
 Debian / Ubuntu :
 
     apt-get update
-    apt-get install python wget screen -y
+    apt-get install python3 wget tmux -y
 
 CentOS / RHEL :
   
-    yum install screen wget python -y
+    yum install python3  wget tmux -y
 
 ## 使用方法
 
-    screen -S uping
-    wget -N --no-check-certificate https://raw.githubusercontent.com/FunctionClub/uPing/master/uping.py
+    tmux new -s uping
+    wget -N --no-check-certificate https://raw.githubusercontent.com/xwyrz/uPing/master/uping.py
     python uping.py
   
 ## 截图
