@@ -1,9 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
-
 import os
 import time
-import commands
+import subprocess
 import sys
 
 class Pinger():
@@ -47,7 +46,7 @@ class Pinger():
 
     def ping(self):
         cmd = "ping "+ self.host + " -c1 -W 1"
-        result = commands.getoutput(cmd)
+        result = subprocess.getoutput(cmd)
         result = result.split()
         result = result[-2].split("/")[0]
         if result.isalpha():
@@ -56,9 +55,9 @@ class Pinger():
 
 
     def use_style(self,string, mode='', fore='', back=''):
-        mode = '%s' % self.STYLE['mode'][mode] if self.STYLE['mode'].has_key(mode) else ''
-        fore = '%s' % self.STYLE['fore'][fore] if self.STYLE['fore'].has_key(fore) else ''
-        back = '%s' % self.STYLE['back'][back] if self.STYLE['back'].has_key(back) else ''
+        mode = '%s' % self.STYLE['mode'][mode] if self.STYLE['mode'].__contains__(mode) else ''
+        fore = '%s' % self.STYLE['fore'][fore] if self.STYLE['fore'].__contains__(fore) else ''
+        back = '%s' % self.STYLE['back'][back] if self.STYLE['back'].__contains__(back) else ''
         style = ';'.join([s for s in [mode, fore, back] if s])
         style = '\033[%sm' % style if style else ''
         end = '\033[%sm' % self.STYLE['default']['end'] if style else ''
@@ -101,12 +100,12 @@ class Pinger():
 
             latency=self.ping()
             current_time = time.localtime(time.time())
-            self.data[i] = {"year":  current_time[0], \
-                            "month": current_time[1], \
-                            "day" :  current_time[2], \
-                            "hour" : current_time[3], \
-                            "minute":current_time[4], \
-                            "second":current_time[5],\
+            self.data[i] = {"year":  current_time[0],
+                            "month": current_time[1],
+                            "day" :  current_time[2],
+                            "hour" : current_time[3],
+                            "minute":current_time[4],
+                            "second":current_time[5],
                             "latency": latency}
 
             i = i + 1
@@ -169,7 +168,7 @@ class Pinger():
             x = self.data[i]
             latency = x["latency"]
 
-            total_count = self.data.keys()[-1]
+            total_count = list(self.data.keys())[-1]
 
             if(self.is_mid_night(x)):
                 if latency == 0:
@@ -233,7 +232,7 @@ class Pinger():
         print("-" * 53)
         print("|{0:16}{1:37}{2:16}|".format("",self.cyan("服务器延迟监测脚本"),""))
         print("-" * 53)
-        print "| {0:37}| {1:37}|".format(self.blue("上午统计"),self.blue("下午统计"))
+        print("| {0:37}| {1:37}|".format(self.blue("上午统计"),self.blue("下午统计")))
         print("{0:39}| {1:37}|".format("| 最低延迟: " + self.colored(  min(self.morning_non_zero) if len(self.morning_non_zero)!=0 else 0),"最低延迟: " + self.colored(min(self.afternoon_non_zero) if len(self.afternoon_non_zero) != 0 else 0)  )  )
         print("{0:39}| {1:37}|".format("| 最高延迟: " + self.colored(max(self.morning_non_zero) if len(self.morning_non_zero)!=0 else 0),"最高延迟: " + self.colored(max(self.afternoon_non_zero) if len(self.afternoon_non_zero) != 0 else 0)))
         print("{0:39}| {1:37}|".format("| 平均延迟: " + self.colored(morning_average),"平均延迟: " + self.colored(afternoon_average)))
@@ -244,7 +243,7 @@ class Pinger():
 
 
         print("-" * 53)
-        print "| {0:37}| {1:37}|".format(self.blue("夜晚统计"), self.blue("半夜统计"))
+        print("| {0:37}| {1:37}|".format(self.blue("夜晚统计"), self.blue("半夜统计")))
         print("{0:39}| {1:37}|".format(
             "| 最低延迟: " + self.colored(min(self.night_non_zero) if len(self.night_non_zero) != 0 else 0),
             "最低延迟: " + self.colored(min(self.midnight_non_zero) if len(self.midnight_non_zero) != 0 else 0)))
@@ -261,14 +260,14 @@ class Pinger():
 
 
         print("-" * 53)
-        print "| {0:63}|".format(self.blue("全局统计"))
+        print("| {0:63}|".format(self.blue("全局统计")))
         print("{0:41}{1:36}|".format("| 最低延迟: " + self.colored(min(total_non_zero) if len(total_non_zero) != 0 else 0),"丢包率    : " + self.lost_percentage(total_zero_list,total_non_zero)))
         print("{0:41}{1:38}|".format("| 最高延迟: " + self.colored(max(total_non_zero) if len(total_non_zero) != 0 else 0),"总超时次数: " + self.red(total_zero)))
         print("{0:41}{1:29}|".format("| 平均延迟: " + self.colored(total_average),"总测试次数: " + str(total_count)))
 
 
         print("-" * 53)
-        print ("|{0:13}{1:30}{2:22}{3:9}|".format("", self.purple("当前测试Ping值:"), self.colored(self.data[self.data.keys()[-1]]["latency"]),""))
+        print ("|{0:13}{1:30}{2:22}{3:9}|".format("", self.purple("当前测试Ping值:"), self.colored(self.data[list(self.data.keys())[-1]]["latency"]),""))
         print("-" * 53)
 
         print("|{0:12}{1:4}{2:2} 小时{3:2} 分钟{4:2} 秒{5:13}|".format("",self.purple("已耗时:"),int(spend_time/3600)if spend_time/3600 >=1 else 0,(int(spend_time % 3600 /60))if spend_time % 3600 /60 >= 1 else 0,int(spend_time % 3600 %60),""))
@@ -279,14 +278,13 @@ class Pinger():
 if __name__ == "__main__" :
     os.system("clear")
     print("服务器延迟监测脚本")
-    print("Made By 主机博客（zhujiboke.com）")
     print("")
     mytime = time.localtime(time.time())
     print("当前服务器时间为: " + str(mytime[0]) + "年" + str(mytime[1]) + "月" + str(mytime[2]) +"日 "  + str(mytime[3]) + ":" + str(mytime[4]) + ":" + str(mytime[5]) )
-    myinput = raw_input("是否正确 (y/n): ")
+    myinput = input("是否正确 (y/n): ")
 
     if myinput == "y":
-        pinghost = raw_input("请输入要Ping的服务器IP/域名：")
+        pinghost = input("请输入要Ping的服务器IP/域名：")
         p = Pinger(pinghost)
         p.start()
     else:
